@@ -89,7 +89,7 @@ namespace TicketPurchaseAPI.Controllers
             {
                 return NotFound();
             }
-
+            //delete event
             await _eventRepository.Delete(id);
             return Ok(eventToDelete);
         }
