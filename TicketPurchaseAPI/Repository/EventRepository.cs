@@ -16,7 +16,21 @@ namespace TicketPurchaseAPI.Repository
         public async Task<Event> Create(Event newEvent)
         {
             await _context.Events.AddAsync(newEvent);
+            await _context.SaveChangesAsync();
             return newEvent;
+        }
+
+        public async Task<Event> Delete(int id)
+        {
+            var eventToDelete = await _context.Events.FindAsync(id);
+            if (eventToDelete == null)
+            {
+                return null;
+            }
+
+           _context.Remove(eventToDelete);
+           await _context.SaveChangesAsync();
+           return eventToDelete;
         }
 
         public async Task<List<Event>> GetAsync()
@@ -38,6 +52,27 @@ namespace TicketPurchaseAPI.Repository
             }
             return singleEvent;
 
+        }
+
+        public async Task<Event> Update(Event newEvent, int id)
+        {
+            var eventToUpdate = await _context.Events.FindAsync(id);
+            if (eventToUpdate == null)
+            {
+                return null;
+            }
+
+            eventToUpdate.Id = id;
+            eventToUpdate.Name = newEvent.Name;
+            eventToUpdate.Description = newEvent.Description;
+            eventToUpdate.Venue = newEvent.Venue;
+            eventToUpdate.Capacity = newEvent.Capacity;
+            
+
+            _context.Update(eventToUpdate);
+            await _context.SaveChangesAsync(); 
+
+            return newEvent;
         }
     }    
 }
