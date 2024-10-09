@@ -1,0 +1,57 @@
+# Build artifacts
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vscode/
+
+# Configuration files
+appsettings.json
+appsettings.*.json
+
+# Environment files
+*.env
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.tlog
+
+# Package management
+*.nupkg
+*.snupkg
+*.sln
+*json
+*csproj
+*http
+packages/
+
+# Publish files
+publish/
+
+# Database files
+*.mdf
+*.ldf
+
+# Generated files
+wwwroot/dist/
+wwwroot/node_modules/
+
+# Security and secrets
+secrets.json
+
+# IDE-specific files
+.idea/
+.DS_Store
+Thumbs.db
