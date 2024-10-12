@@ -6,8 +6,7 @@
         {
             Silver = 1,
             Gold = 2,
-            Diamond = 3,
-            Platinu = 4
+            Diamond = 3
         }
 
         public enum TicketStatus
@@ -23,10 +22,10 @@
         public TicketType Type { get; set; }
         public TicketStatus Status { get; set; }
         public Event Event { get; set; }
-        public int EventId { get; set; }
+        public int EventId { get; set; } 
         public decimal Price { get; set; }
         public DateTime Created_At { get; set; } = DateTime.Now;
-        public DateTime Updated_At { get; set; }
+        public DateTime? Updated_At { get; set; }
 
 
 

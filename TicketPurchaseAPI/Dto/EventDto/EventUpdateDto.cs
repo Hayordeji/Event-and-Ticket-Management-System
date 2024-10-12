@@ -1,6 +1,6 @@
-﻿namespace TicketPurchaseAPI.Dto
+﻿namespace TicketPurchaseAPI.Dto.EventDto
 {
-    public class EventCreateDto
+    public class EventUpdateDto
     {
         public string Name { get; set; }
         public string Description { get; set; }

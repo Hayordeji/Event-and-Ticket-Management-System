@@ -1,4 +1,4 @@
-﻿using TicketPurchaseAPI.Dto;
+﻿using TicketPurchaseAPI.Dto.EventDto;
 using TicketPurchaseAPI.Model;
 
 namespace TicketPurchaseAPI.Mapper

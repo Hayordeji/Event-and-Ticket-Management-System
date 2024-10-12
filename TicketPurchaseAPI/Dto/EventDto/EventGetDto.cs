@@ -1,4 +1,4 @@
-﻿namespace TicketPurchaseAPI.Dto
+﻿namespace TicketPurchaseAPI.Dto.EventDto
 {
     public class EventGetDto
     {

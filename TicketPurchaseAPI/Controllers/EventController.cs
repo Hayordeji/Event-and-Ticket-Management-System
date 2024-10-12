@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TicketPurchaseAPI.Dto;
+using TicketPurchaseAPI.Dto.EventDto;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Mapper;
 using TicketPurchaseAPI.Model;
