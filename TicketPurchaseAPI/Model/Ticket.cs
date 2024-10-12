@@ -25,7 +25,7 @@
         public int EventId { get; set; } 
         public decimal Price { get; set; }
         public DateTime Created_At { get; set; } = DateTime.Now;
-        public DateTime? Updated_At { get; set; }
+        public DateTime? Updated_At { get; set; } 
 
 
 

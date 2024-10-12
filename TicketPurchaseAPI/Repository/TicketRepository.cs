@@ -14,19 +14,19 @@ namespace TicketPurchaseAPI.Repository
         {
             _context = context;  
         }
-        public async Task<Ticket> CreateTicketAsync(int eventId,string ticketType, decimal price )
+        public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType, decimal price )
         {
-            var eventObject = await _context.Events.FindAsync(eventId);
             
-            var newTicket = new Ticket
-            {
-                Type = TicketType.Silver,  
-                Status = TicketStatus.Pending,
-                Event = eventObject,
-                EventId = eventObject.Id,
-                Price = price,
+            var newTicket = new Ticket();
+
+                newTicket.Type = TicketType.Silver;  
+                newTicket.Status = TicketStatus.Pending;
+                newTicket.Event = eventObject;
+                newTicket.EventId = eventObject.Id;
+                newTicket.Price = price;
+                newTicket.Updated_At = DateTime.Now;
                 
-            };
+            
             switch (ticketType)
             {
                 case "Silver":
@@ -42,6 +42,18 @@ namespace TicketPurchaseAPI.Repository
             await _context.AddAsync(newTicket);
             await _context.SaveChangesAsync();
             return newTicket;
+        }
+
+        public async Task<Ticket> DeleteTicket(int id)
+        {
+            var ticketToDelete = await _context.Tickets.FindAsync(id);
+            if (ticketToDelete == null)
+            {
+                return null;
+            }
+            _context.Remove(ticketToDelete);
+            await _context.SaveChangesAsync();
+            return ticketToDelete;
         }
 
         public async Task<Ticket> GetTicketById(int id)
