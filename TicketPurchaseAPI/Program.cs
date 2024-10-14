@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using TicketPurchaseAPI.Data;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Repository;
+using TicketPurchaseAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<ITicketRepository,TicketRepository>();
+builder.Services.AddScoped<IQRGeneratorService, QRGeneratorService>();
+
+
 
 var app = builder.Build();
 

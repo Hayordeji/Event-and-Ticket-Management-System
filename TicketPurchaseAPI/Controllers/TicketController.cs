@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketPurchaseAPI.Interface;
+using TicketPurchaseAPI.Model;
+using TicketPurchaseAPI.Services;
+using static TicketPurchaseAPI.Model.Ticket;
 
 namespace TicketPurchaseAPI.Controllers
 {
@@ -10,13 +13,15 @@ namespace TicketPurchaseAPI.Controllers
     {
         private readonly ITicketRepository _ticketRepo;
         private readonly IEventRepository _eventRepo;
-        public TicketController(ITicketRepository ticketRepo, IEventRepository  eventRepo)
+        private readonly IQRGeneratorService _qrGeneratorService;
+        public TicketController(ITicketRepository ticketRepo, IEventRepository  eventRepo, IQRGeneratorService qRGeneratorService)
         {
             _ticketRepo = ticketRepo;
             _eventRepo = eventRepo;
+            _qrGeneratorService = qRGeneratorService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create ([FromBody] int eventId,string ticketType, decimal price)
         {
             if (!ModelState.IsValid)
@@ -25,14 +30,24 @@ namespace TicketPurchaseAPI.Controllers
             }
             var objectEvent = await _eventRepo.GetByIdAsync(eventId); 
             var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType,price);
+           
             return Ok(newTicket);
+        }
+
+        [HttpPost("create/qrcodegen")]
+        public async Task<IActionResult> QRCodeData([FromRoute]int id)
+        {
+            var ticket = await _ticketRepo.GetTicketById(id);
+            await _qrGeneratorService.GenerateImage("www.google.com");
+
+            return Ok();
         }
 
         [HttpGet]
         public async Task<IActionResult> Tickets()
         {
             var tickets = await _ticketRepo.GetTicketsAsync();
-            if (tickets == null)
+            if (Ticket == null)
             {
                 return NotFound();
             }
@@ -71,5 +86,7 @@ namespace TicketPurchaseAPI.Controllers
             }
             return Ok(ticketToDelete);
         }
+
+       
     }
 }

@@ -1,9 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using TicketPurchaseAPI.Data;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Model;
 using static TicketPurchaseAPI.Model.Ticket;
+using System.Text;
+using System.Drawing;
+
+
 
 namespace TicketPurchaseAPI.Repository
 {
@@ -16,13 +21,13 @@ namespace TicketPurchaseAPI.Repository
         }
         public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType, decimal price )
         {
-            
+               
             var newTicket = new Ticket();
 
                 newTicket.Type = TicketType.Silver;  
                 newTicket.Status = TicketStatus.Pending;
-                newTicket.Event = eventObject;
                 newTicket.EventId = eventObject.Id;
+                newTicket.Event = eventObject;
                 newTicket.Price = price;
                 newTicket.Updated_At = DateTime.Now;
                 
@@ -39,6 +44,7 @@ namespace TicketPurchaseAPI.Repository
                     newTicket.Type = TicketType.Diamond;
                     break;
             }
+
             await _context.AddAsync(newTicket);
             await _context.SaveChangesAsync();
             return newTicket;
@@ -68,6 +74,7 @@ namespace TicketPurchaseAPI.Repository
 
         public async Task<List<Ticket>> GetTicketsAsync()
         {
+
             return await _context.Tickets.ToListAsync();
         }
     }
