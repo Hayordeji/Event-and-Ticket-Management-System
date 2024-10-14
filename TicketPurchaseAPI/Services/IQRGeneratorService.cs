@@ -1,7 +1,9 @@
-﻿namespace TicketPurchaseAPI.Services
+﻿using TicketPurchaseAPI.Model;
+
+namespace TicketPurchaseAPI.Services
 {
     public interface IQRGeneratorService
     {
-       byte[] GenerateImage(string data);
+       Task<byte[]> GenerateImage(Ticket ticketData);
     }
 }

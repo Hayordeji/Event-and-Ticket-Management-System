@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Model;
 using TicketPurchaseAPI.Services;
@@ -38,10 +39,29 @@ namespace TicketPurchaseAPI.Controllers
         public async Task<IActionResult> QRCodeData([FromRoute]int id)
         {
             var ticket = await _ticketRepo.GetTicketById(id);
-            await _qrGeneratorService.GenerateImage("www.google.com");
+            await _qrGeneratorService.GenerateImage(ticket);
 
             return Ok();
         }
+
+        [HttpGet("qrcode/validate")]
+        public async Task<IActionResult> Validate(string serializedTicket)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Ticket ticketObject = JsonConvert.DeserializeObject<Ticket>(serializedTicket);
+            if (await _ticketRepo.TicketExists(ticketObject.Id))
+            {
+                return Ok("Ticket is Validated");
+            }
+            return NotFound("Ticket was not found");
+
+
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Tickets()

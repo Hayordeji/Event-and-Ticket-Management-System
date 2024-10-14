@@ -77,5 +77,10 @@ namespace TicketPurchaseAPI.Repository
 
             return await _context.Tickets.ToListAsync();
         }
+
+        public async Task<bool> TicketExists(int id)
+        {
+            return true ? await _context.Tickets.AnyAsync(x => x.Id == id) : false;
+        }
     }
 }
