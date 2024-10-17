@@ -27,6 +27,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<ITicketRepository,TicketRepository>();
 builder.Services.AddScoped<IQRGeneratorService, QRGeneratorService>();
+builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
