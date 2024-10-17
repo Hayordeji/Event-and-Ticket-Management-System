@@ -35,7 +35,7 @@ namespace TicketPurchaseAPI.Controllers
             return Ok(newTicket);
         }
 
-        [HttpPost("create/qrcodegen")]
+        [HttpPost("{id}/qrcodegen")]
         public async Task<IActionResult> QRCodeData([FromRoute]int id)
         {
             var ticket = await _ticketRepo.GetTicketById(id);
@@ -45,21 +45,19 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpGet("qrcode/validate")]
-        public async Task<IActionResult> Validate(string serializedTicket)
+        public async Task<IActionResult> Validate(int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            Ticket ticketObject = JsonConvert.DeserializeObject<Ticket>(serializedTicket);
-            if (await _ticketRepo.TicketExists(ticketObject.Id))
+            //Ticket ticketObject = JsonConvert.DeserializeObject<Ticket>(serializedTicket);
+            if (await _ticketRepo.TicketExists(id))
             {
                 return Ok("Ticket is Validated");
             }
             return NotFound("Ticket was not found");
-
-
         }
 
 

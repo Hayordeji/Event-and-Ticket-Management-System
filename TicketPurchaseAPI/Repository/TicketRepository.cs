@@ -64,7 +64,7 @@ namespace TicketPurchaseAPI.Repository
 
         public async Task<Ticket> GetTicketById(int id)
         {
-           var ticket = await _context.Tickets.FindAsync(id);
+           var ticket = await _context.Tickets.Include(e => e.Event).FirstOrDefaultAsync(x => x.Id == id);
             if (ticket == null)
             {
                 return null;
@@ -75,9 +75,9 @@ namespace TicketPurchaseAPI.Repository
         public async Task<List<Ticket>> GetTicketsAsync()
         {
 
-            return await _context.Tickets.ToListAsync();
-        }
+            return await _context.Tickets.Include(e => e.Event).ToListAsync();
 
+        }
         public async Task<bool> TicketExists(int id)
         {
             return true ? await _context.Tickets.AnyAsync(x => x.Id == id) : false;
