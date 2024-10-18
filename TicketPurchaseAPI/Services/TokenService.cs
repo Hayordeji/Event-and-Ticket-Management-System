@@ -10,8 +10,9 @@ namespace TicketPurchaseAPI.Services
     {
         private readonly SymmetricSecurityKey _key;
         private readonly IConfiguration _config;
-        public TokenService(IConfiguration config, SymmetricSecurityKey key)
+        public TokenService(IConfiguration config)
         {
+            _config = config;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
         }
         public async Task<string> CreateTokenAsync(AppUser user)
