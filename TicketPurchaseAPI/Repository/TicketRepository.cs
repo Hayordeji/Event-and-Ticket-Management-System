@@ -19,16 +19,13 @@ namespace TicketPurchaseAPI.Repository
         {
             _context = context;  
         }
-        public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType, decimal price )
+        public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType)
         {
                
-            var newTicket = new Ticket();
-
-                newTicket.Type = TicketType.Silver;  
+            var newTicket = new Ticket(); 
                 newTicket.Status = TicketStatus.Pending;
                 newTicket.EventId = eventObject.Id;
                 newTicket.Event = eventObject;
-                newTicket.Price = price;
                 newTicket.Updated_At = DateTime.Now;
                 
             
@@ -36,12 +33,15 @@ namespace TicketPurchaseAPI.Repository
             {
                 case "Silver":
                     newTicket.Type = TicketType.Silver;
+                    newTicket.Price = 25;
                     break;
                 case "Gold":
                     newTicket.Type = TicketType.Gold;
+                    newTicket.Price = 50;
                     break;
                 case "Diamond":
                     newTicket.Type = TicketType.Diamond;
+                    newTicket.Price = 100; 
                     break;
             }
 

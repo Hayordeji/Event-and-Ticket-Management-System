@@ -23,15 +23,19 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create ([FromBody] int eventId,string ticketType, decimal price)
+        public async Task<IActionResult> Create (int eventId,string ticketType)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var objectEvent = await _eventRepo.GetByIdAsync(eventId); 
-            var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType,price);
-           
+            var objectEvent = await _eventRepo.GetByIdAsync(eventId);
+            if (objectEvent == null)
+            {
+                return StatusCode(500, "Event not found");
+            }
+            var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType);
+            await _qrGeneratorService.GenerateImage(newTicket);
             return Ok(newTicket);
         }
 
@@ -52,7 +56,6 @@ namespace TicketPurchaseAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            //Ticket ticketObject = JsonConvert.DeserializeObject<Ticket>(serializedTicket);
             if (await _ticketRepo.TicketExists(id))
             {
                 return Ok("Ticket is Validated");

@@ -45,7 +45,7 @@ namespace TicketPurchaseAPI.Repository
 
         public async Task<Event> GetByIdAsync(int id)
         {
-            var singleEvent = await _context.Events.FindAsync(id);
+            var singleEvent = await _context.Events.FirstOrDefaultAsync(x => x.Id == id);
             if (singleEvent == null)
             {
                 return null;
