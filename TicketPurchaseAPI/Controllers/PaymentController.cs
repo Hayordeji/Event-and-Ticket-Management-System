@@ -43,7 +43,7 @@ namespace TicketPurchaseAPI.Controllers
 
 
             var client = new HttpClient();
-            client.BaseAddress = new Uri("https://api.flutterwave.com/v3/payments");
+            client.BaseAddress = new Uri("https://api.flutterwave.com/v3/payments/");
 
             var response = client.PostAsync("checkout", content).Result;
             if (response.IsSuccessStatusCode)
