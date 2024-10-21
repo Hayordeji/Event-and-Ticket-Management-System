@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using TicketPurchaseAPI.Dto.Payment;
 using TicketPurchaseAPI.Extensions;
+using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Model;
 
 namespace TicketPurchaseAPI.Controllers
@@ -18,68 +19,33 @@ namespace TicketPurchaseAPI.Controllers
     {
         private readonly IConfiguration _config;
         private readonly UserManager<AppUser> _userManager;
-
-        public PaymentController(IConfiguration config, UserManager<AppUser> userManager)
+        private readonly ITicketRepository _ticketRepo;
+        public PaymentController(IConfiguration config, UserManager<AppUser> userManager, ITicketRepository ticketRepo )
         {
             _config = config;
             _userManager = userManager;
+            _ticketRepo = ticketRepo;
         }
 
-        //public class PaymentRequest
-        //{
-        //    public string tx_ref { get; set; }
-        //    public string amount { get; set; }
-        //    public string currency { get; set; }
-        //    public string redirect_url { get; set; }
-        //    public Customer customer { get; set; }
-        //    public Customizations customizations { get; set; }
+       
 
-        //}
-
-        //public class Customer
-        //{
-        //    public string email { get; set; }
-        //    public string name { get; set; }
-        //    public string phonenumber { get; set; }
-        //}
-
-        //public class Customizations
-        //{
-        //    public string title { get; set; }
-        //}
-
-        [HttpPost("/checkout")]
+        [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Payment([FromBody] int amount )
+        public async Task<IActionResult> Checkout(int ticketId )
         {
 
-            //var paymentDetail = new PaymentRequest
-            //{
-            //    tx_ref = "UNIQUE_TRANSACTION_REFERENCE2",
-            //    amount = "7500",
-            //    currency = "NGN",
-            //    redirect_url = "https://example_company.com/success",
-            //    customer = new Customer
-            //    {
-            //        email = "developers@flutterwavego.com",
-            //        name = "Flutterwave Developers",
-            //        phonenumber = "09012345678"
-            //    },
-            //    customizations = new Customizations
-            //    {
-            //        title = "Flutterwave Standard Payment"
-            //    }
-            //};
-
-
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
+            var ticket = await _ticketRepo.GetTicketById(ticketId);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
             var paymentDetail = new CheckoutPaymentDto
             {
                 tx_ref = Guid.NewGuid().ToString(),
-                amount = amount,
+                amount = ((int)ticket.Price),
                 currency = "NGN",
-                redirect_url = "https://example_company.com/success",
+                redirect_url = "https://google.com",
                 customer = new Customer
                 {
                     email = userEmail

@@ -15,11 +15,13 @@ namespace TicketPurchaseAPI.Controllers
         private readonly ITicketRepository _ticketRepo;
         private readonly IEventRepository _eventRepo;
         private readonly IQRGeneratorService _qrGeneratorService;
+       
         public TicketController(ITicketRepository ticketRepo, IEventRepository  eventRepo, IQRGeneratorService qRGeneratorService)
         {
             _ticketRepo = ticketRepo;
             _eventRepo = eventRepo;
             _qrGeneratorService = qRGeneratorService;
+           
         }
 
         [HttpPost("create")]
@@ -36,8 +38,10 @@ namespace TicketPurchaseAPI.Controllers
             }
             var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType);
             await _qrGeneratorService.GenerateImage(newTicket);
-
-            return RedirectToAction("Payment","PaymentController", new {amount = ((int)newTicket.Price)});
+            
+            
+            return Ok(newTicket);
+            
         }
 
         [HttpPost("{id}/qrcodegen")]
