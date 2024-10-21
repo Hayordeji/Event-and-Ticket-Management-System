@@ -36,7 +36,8 @@ namespace TicketPurchaseAPI.Controllers
             }
             var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType);
             await _qrGeneratorService.GenerateImage(newTicket);
-            return Ok(newTicket);
+
+            return RedirectToAction("Payment","PaymentController", new {amount = ((int)newTicket.Price)});
         }
 
         [HttpPost("{id}/qrcodegen")]
