@@ -8,7 +8,8 @@ namespace TicketPurchaseAPI.Interface
         Task<List<Ticket>> GetTicketsAsync();
         Task<Ticket> GetTicketById(int id);
         Task<Ticket> DeleteTicket(int id);
-        
+        Task<Ticket> ConfirmPayment(int id);
+        Task<Ticket> VaidateTicket(int id); 
         Task<bool> TicketExists(int id);
     }
 }

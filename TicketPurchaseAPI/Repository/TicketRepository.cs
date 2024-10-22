@@ -19,6 +19,19 @@ namespace TicketPurchaseAPI.Repository
         {
             _context = context;  
         }
+
+        public async Task<Ticket> ConfirmPayment(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+            if (ticket == null)
+            {
+                return null;
+            }
+            ticket.Status = TicketStatus.Paid;
+            await _context.SaveChangesAsync();
+            return ticket;
+        }
+
         public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType)
         {
                
@@ -81,6 +94,19 @@ namespace TicketPurchaseAPI.Repository
         public async Task<bool> TicketExists(int id)
         {
             return true ? await _context.Tickets.AnyAsync(x => x.Id == id) : false;
+        }
+
+        public async Task<Ticket> VaidateTicket(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+            if (ticket == null)
+            {
+                return null;
+            }
+            ticket.Status = TicketStatus.Validated;
+            await _context.SaveChangesAsync();
+            return ticket;
+
         }
     }
 }

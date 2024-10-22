@@ -60,29 +60,45 @@ namespace TicketPurchaseAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+           
             if (await _ticketRepo.TicketExists(id))
             {
-                return Ok("Ticket is Validated");
+                var ticket = await _ticketRepo.VaidateTicket(id);
+                return Ok("Ticket is Validated" + ticket);
             }
             return NotFound("Ticket was not found");
         }
 
+        [HttpGet("/confirmpayment")]
+        public async Task<IActionResult> ConfirmPayment(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (await _ticketRepo.TicketExists(id))
+            {
+                var ticket = await _ticketRepo.ConfirmPayment(id);
+                return Ok("Payment Confirmed...." + "Ticket Detail : " + ticket);
+            }
+            return NotFound("Ticket was not found");
+        }
 
         [HttpGet]
         public async Task<IActionResult> Tickets()
         {
             var tickets = await _ticketRepo.GetTicketsAsync();
-            if (Ticket == null)
+            if (tickets == null)
             {
                 return NotFound();
             }
-
+            string url = Url.Action("TicketById", "Ticket");
             return Ok(tickets);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Ticket([FromRoute]int id)
+        public async Task<IActionResult> TicketById([FromRoute]int id)
         {
             if (!ModelState.IsValid)
             {
