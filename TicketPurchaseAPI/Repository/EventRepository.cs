@@ -13,8 +13,9 @@ namespace TicketPurchaseAPI.Repository
         {
             _context = context;
         }
-        public async Task<Event> Create(Event newEvent)
+        public async Task<Event> Create(Event newEvent, string Host)
         {
+            newEvent.Host = Host;
             await _context.Events.AddAsync(newEvent);
             await _context.SaveChangesAsync();
             return newEvent;

@@ -7,6 +7,7 @@ using TicketPurchaseAPI.Model;
 using static TicketPurchaseAPI.Model.Ticket;
 using System.Text;
 using System.Drawing;
+using Microsoft.AspNetCore.Identity;
 
 
 
@@ -14,32 +15,38 @@ namespace TicketPurchaseAPI.Repository
 {
     public class TicketRepository : ITicketRepository
     {
-        private readonly ApplicationDbContext _context; 
-        public TicketRepository(ApplicationDbContext context)
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;  
+        public TicketRepository(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
-            _context = context;  
+            _context = context;
+            _userManager = userManager;
         }
 
         public async Task<Ticket> ConfirmPayment(int id)
         {
-            var ticket = await _context.Tickets.FindAsync(id);
+            var ticket = await _context.Tickets.Include(e => e.Event).FirstOrDefaultAsync(i => i.Id == id);
             if (ticket == null)
             {
                 return null;
             }
+            var ticketSeller = await _userManager.FindByNameAsync(ticket.Event.Host);
+            ticketSeller.Balance = ticketSeller.Balance + ((int)ticket.Price);
             ticket.Status = TicketStatus.Paid;
+            ticket.Event.TicketSold++;
             await _context.SaveChangesAsync();
             return ticket;
         }
 
-        public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType)
+        public async Task<Ticket> CreateTicketAsync(Event eventObject,string ticketType, string buyer)
         {
-               
+                
             var newTicket = new Ticket(); 
                 newTicket.Status = TicketStatus.Pending;
                 newTicket.EventId = eventObject.Id;
                 newTicket.Event = eventObject;
                 newTicket.Updated_At = DateTime.Now;
+                newTicket.BoughtBy = buyer;
                 
             
             switch (ticketType)

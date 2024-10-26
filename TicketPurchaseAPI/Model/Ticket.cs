@@ -23,6 +23,7 @@
         public TicketStatus Status { get; set; }
         public Event Event { get; set; }
         public int EventId { get; set; } 
+        public string BoughtBy { get; set; } 
         public decimal Price { get; set; }
         public DateTime Created_At { get; set; } = DateTime.Now;
         public DateTime? Updated_At { get; set; } 

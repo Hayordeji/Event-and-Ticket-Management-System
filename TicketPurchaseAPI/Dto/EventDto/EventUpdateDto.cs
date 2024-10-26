@@ -6,5 +6,6 @@
         public string Description { get; set; }
         public string Venue { get; set; }
         public int Capacity { get; set; }
+        public string Host { get; set; }
     }
 }

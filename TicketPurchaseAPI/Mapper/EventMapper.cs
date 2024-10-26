@@ -26,6 +26,8 @@ namespace TicketPurchaseAPI.Mapper
                 Description = eventModel.Description,
                 Venue = eventModel.Venue,
                 Capacity = eventModel.Capacity,
+                Host = eventModel.Host,
+                TicketSold = eventModel.TicketSold,
             };
         }
 
@@ -37,6 +39,7 @@ namespace TicketPurchaseAPI.Mapper
                 Description = eventModel.Description,
                 Venue = eventModel.Venue,
                 Capacity = eventModel.Capacity,
+                Host = eventModel.Host,
             };
         }
     }

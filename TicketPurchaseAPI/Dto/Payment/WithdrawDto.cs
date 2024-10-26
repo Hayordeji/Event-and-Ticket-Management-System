@@ -4,8 +4,8 @@
     {
         public string account_bank {  get; set; }
         public string account_number { get; set; }
-        public int amount { get; set; }
-        public string description { get; set; }
+        public decimal amount { get; set; }
+        public string currency { get; set; }
         public string narration { get; set; }
 
     }

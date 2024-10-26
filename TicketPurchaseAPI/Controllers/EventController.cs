@@ -35,8 +35,7 @@ namespace TicketPurchaseAPI.Controllers
             }
             var user = User.GetUsername();
             var newEventDto = eventModel.ToEventCreateDto();
-            var jker = "hhh";
-            var newEvent = await _eventRepository.Create(newEventDto);
+            var newEvent = await _eventRepository.Create(newEventDto, user);
             
             if (newEvent == null)
             {
@@ -52,6 +51,8 @@ namespace TicketPurchaseAPI.Controllers
         public async Task<IActionResult> GetEvents()
         {
             var events = await _eventRepository.GetAsync();
+            
+            
             if (events == null)
             {
                 return StatusCode(500, "There are no events");

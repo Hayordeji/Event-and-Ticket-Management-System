@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using TicketPurchaseAPI.Extensions;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Model;
 using TicketPurchaseAPI.Services;
@@ -33,15 +35,18 @@ namespace TicketPurchaseAPI.Controllers
             {
                 return BadRequest();
             }
-            var objectEvent = await _eventRepo.GetByIdAsync(eventId);
-            if (objectEvent == null)
+            var user = User.GetUsername();
+            var eventObject = await _eventRepo.GetByIdAsync(eventId);
+            if (eventObject == null)
             {
                 return StatusCode(500, "Event not found");
             }
-            var newTicket = await _ticketRepo.CreateTicketAsync(objectEvent,ticketType);
-            await _qrGeneratorService.GenerateImage(newTicket);
-            
-            
+            else if (eventObject.TicketSold == eventObject.Capacity)
+            {
+                return BadRequest("Event has been sold out");
+            }
+           
+            var newTicket = await _ticketRepo.CreateTicketAsync(eventObject, ticketType,user);
             return Ok(newTicket);
             
         }
@@ -92,12 +97,14 @@ namespace TicketPurchaseAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
 
             if (await _ticketRepo.TicketExists(id))
             {
                 var ticket = await _ticketRepo.ConfirmPayment(id);
                 return Ok("Payment Confirmed...." + "Ticket Detail : " + ticket);
             }
+            
             return NotFound("Ticket was not found");
         }
 

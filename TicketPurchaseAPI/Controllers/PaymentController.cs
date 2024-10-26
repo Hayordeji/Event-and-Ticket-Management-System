@@ -52,9 +52,8 @@ namespace TicketPurchaseAPI.Controllers
                 }
             };
             string json = JsonConvert.SerializeObject(paymentDetail);
-            string secretKey = _config["FlutterwaveSecretKey"];
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+            string secretKey = _config["FlutterwaveSecretKey"];
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", secretKey);
@@ -73,19 +72,51 @@ namespace TicketPurchaseAPI.Controllers
             }
         }
 
-        //[HttpPost("Withdraw")]
-        //[Authorize]
-        //public async Task<IActionResult> Withdraw([FromBody] WithdrawDto withdrawalModel)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPost("Withdraw")]
+        [Authorize]
+        public async Task<IActionResult> Withdraw([FromBody] WithdrawDto withdrawalModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            string secretKey = _config["FlutterwaveSecretKey"];
+            string flutterUrl = _config["FlutterwaveBaseUrl"];
+            var user = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(user);
+            
+            
 
+            var withdrawalDto = new WithdrawDto
+            {
+                account_bank = withdrawalModel.account_bank,
+                account_number = withdrawalModel.account_number,
+                amount = ((int)withdrawalModel.amount),
+                currency = "NGN",
+                narration = $"Withdraw for {user}",
 
-        //}
+            };
 
-        [HttpPost("BankCode")]
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", secretKey);
+            string json = JsonConvert.SerializeObject(withdrawalDto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = client.PostAsync($"{flutterUrl}/transfers",content).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var deserializedResponse = JsonConvert.DeserializeObject(responseContent);
+                return Ok(deserializedResponse);
+            }
+            else
+            {
+                return BadRequest(response.Content.ReadAsStringAsync());
+            }
+
+        }
+
+        [HttpGet("BankCode")]
         [Authorize]
         public async Task<IActionResult> BankCode()
         {
@@ -95,13 +126,13 @@ namespace TicketPurchaseAPI.Controllers
             }
 
             string secretKey = _config["FlutterwaveSecretKey"];
+            string flutterUrl = _config["FlutterwaveBaseUrl"];
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", secretKey);
-
-
-            var response = client.GetAsync("https://api.flutterwave.com/v3/banks/NG").Result;
+            var response = client.GetAsync($"{flutterUrl}/banks/NG").Result;
             if (response.IsSuccessStatusCode)
             {
+                //hi
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var deserializedResponse = JsonConvert.DeserializeObject(responseContent);
                 return Ok(deserializedResponse);
