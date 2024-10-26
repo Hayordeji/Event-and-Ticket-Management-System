@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TicketPurchaseAPI.Dto.EventDto;
+using TicketPurchaseAPI.Extensions;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Mapper;
 using TicketPurchaseAPI.Model;
@@ -12,21 +16,28 @@ namespace TicketPurchaseAPI.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventRepository _eventRepository;
-        public EventController(IEventRepository eventRepository)
+        private readonly UserManager<AppUser> _userManager;
+
+        public EventController(IEventRepository eventRepository, UserManager<AppUser> userManager)
         {
             _eventRepository = eventRepository;
+            _userManager = userManager;
         }
 
-
+        
         [HttpPost("/event/create")]
+        [Authorize]
         public async Task<IActionResult> CreateEvent([FromBody] EventCreateDto eventModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            var user = User.GetUsername();
             var newEventDto = eventModel.ToEventCreateDto();
+            var jker = "hhh";
             var newEvent = await _eventRepository.Create(newEventDto);
+            
             if (newEvent == null)
             {
                 return StatusCode(400, "Event is empty");
@@ -35,7 +46,9 @@ namespace TicketPurchaseAPI.Controllers
             return Ok(newEvent);
         }
 
+
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetEvents()
         {
             var events = await _eventRepository.GetAsync();
@@ -47,6 +60,7 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -63,6 +77,7 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] EventUpdateDto updateDto)
         {
             if (!ModelState.IsValid) 
@@ -82,6 +97,7 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var eventToDelete = await _eventRepository.GetByIdAsync(id);

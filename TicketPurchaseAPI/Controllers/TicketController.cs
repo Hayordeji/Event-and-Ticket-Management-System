@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TicketPurchaseAPI.Interface;
@@ -24,7 +25,8 @@ namespace TicketPurchaseAPI.Controllers
            
         }
 
-        [HttpPost("create")]
+        [HttpPost("Create")]
+        [Authorize]
         public async Task<IActionResult> Create (int eventId,string ticketType)
         {
             if (!ModelState.IsValid)
@@ -44,16 +46,22 @@ namespace TicketPurchaseAPI.Controllers
             
         }
 
-        [HttpPost("{id}/qrcodegen")]
+        [HttpPost("{id}/QRrCodeGen")]
+        [Authorize]
         public async Task<IActionResult> QRCodeData([FromRoute]int id)
         {
             var ticket = await _ticketRepo.GetTicketById(id);
+            if (ticket.Status == TicketStatus.Pending)
+            {
+                return BadRequest("Can't Generate QRCode...Make Payment first"); 
+            }
             await _qrGeneratorService.GenerateImage(ticket);
 
             return Ok();
         }
 
-        [HttpGet("qrcode/validate")]
+        [HttpGet("qrcode/Validate/{id}")]
+        [Authorize]
         public async Task<IActionResult> Validate(int id)
         {
             if (!ModelState.IsValid)
@@ -61,15 +69,23 @@ namespace TicketPurchaseAPI.Controllers
                 return BadRequest(ModelState);
             }
            
-            if (await _ticketRepo.TicketExists(id))
+            var ticket = await _ticketRepo.GetTicketById(id);
+
+            switch (ticket.Status)
             {
-                var ticket = await _ticketRepo.VaidateTicket(id);
-                return Ok("Ticket is Validated" + ticket);
+                case TicketStatus.Pending:
+                    return BadRequest("Make payment for ticket first");
+                case TicketStatus.Validated:
+                    return BadRequest("Ticket has already been validated before");
+                case TicketStatus.Paid:
+                    await _ticketRepo.VaidateTicket(id);
+                    return Ok("Ticket is Validated" + ticket);
             }
-            return NotFound("Ticket was not found");
+
+            return BadRequest("Something went wrong");   
         }
 
-        [HttpGet("/confirmpayment")]
+        [HttpGet("/Confirmpayment/{id}")]
         public async Task<IActionResult> ConfirmPayment(int id)
         {
             if (!ModelState.IsValid)
@@ -86,6 +102,7 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Tickets()
         {
             var tickets = await _ticketRepo.GetTicketsAsync();
@@ -93,11 +110,12 @@ namespace TicketPurchaseAPI.Controllers
             {
                 return NotFound();
             }
-            string url = Url.Action("TicketById", "Ticket");
+           
             return Ok(tickets);
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> TicketById([FromRoute]int id)
         {
             if (!ModelState.IsValid)
@@ -114,6 +132,7 @@ namespace TicketPurchaseAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete (int id)
         {
             if (!ModelState.IsValid)

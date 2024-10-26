@@ -29,7 +29,7 @@ namespace TicketPurchaseAPI.Controllers
 
        
 
-        [HttpPost]
+        [HttpPost("{ticketId}")]
         [Authorize]
         public async Task<IActionResult> Checkout(int ticketId )
         {
@@ -45,7 +45,7 @@ namespace TicketPurchaseAPI.Controllers
                 tx_ref = Guid.NewGuid().ToString(),
                 amount = ((int)ticket.Price),
                 currency = "NGN",
-                redirect_url = "https://google.com",
+                redirect_url = $"https://localhost:7188/Confirmpayment/{ticketId}",
                 customer = new Customer
                 {
                     email = userEmail
@@ -72,6 +72,47 @@ namespace TicketPurchaseAPI.Controllers
                 return BadRequest(response.StatusCode);
             }
         }
+
+        //[HttpPost("Withdraw")]
+        //[Authorize]
+        //public async Task<IActionResult> Withdraw([FromBody] WithdrawDto withdrawalModel)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+
+        //}
+
+        [HttpPost("BankCode")]
+        [Authorize]
+        public async Task<IActionResult> BankCode()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            string secretKey = _config["FlutterwaveSecretKey"];
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", secretKey);
+
+
+            var response = client.GetAsync("https://api.flutterwave.com/v3/banks/NG").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var deserializedResponse = JsonConvert.DeserializeObject(responseContent);
+                return Ok(deserializedResponse);
+            }
+            else
+            {
+                return BadRequest(response.StatusCode);
+            }
+
+        }
+
 
 
 

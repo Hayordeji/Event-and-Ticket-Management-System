@@ -12,8 +12,8 @@ using TicketPurchaseAPI.Data;
 namespace TicketPurchaseAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241017222925_SeedRole")]
-    partial class SeedRole
+    [Migration("20241026080631_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,13 @@ namespace TicketPurchaseAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "29d3a5c1-f992-4159-9020-e894cce7b4a5",
+                            Id = "e486a043-0ef8-4bcd-9de5-59e60fc13f3b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "6cff526d-6a26-4139-b59d-6359d9b0fcd2",
+                            Id = "547aa55f-4da3-4034-a649-29f3d78857ed",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -180,6 +180,9 @@ namespace TicketPurchaseAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("Balance")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -259,6 +262,9 @@ namespace TicketPurchaseAPI.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TicketSold")
+                        .HasColumnType("int");
 
                     b.Property<string>("Venue")
                         .IsRequired()
