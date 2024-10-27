@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TicketPurchaseAPI.Data;
 using TicketPurchaseAPI.Interface;
 using TicketPurchaseAPI.Model;
@@ -32,14 +33,19 @@ namespace TicketPurchaseAPI.Repository
             return newPayment;
         }
 
-        public Task<TicketPayment> GetPaymentByIdAsync(int id)
+        public async Task<TicketPayment> GetPaymentByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var paymentRecord = await _context.TicketPayments.FindAsync(id);
+            if (paymentRecord == null)
+            {
+                return null;
+            }
+            return paymentRecord;
         }
 
-        public Task<List<TicketPayment>> GetPaymentsAsync()
+        public async Task<List<TicketPayment>> GetPaymentsAsync()
         {
-            throw new NotImplementedException();
+            return await _context.TicketPayments.ToListAsync();
         }
     }
 }

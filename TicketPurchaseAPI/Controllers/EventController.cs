@@ -24,17 +24,21 @@ namespace TicketPurchaseAPI.Controllers
             _userManager = userManager;
         }
 
-        
+        //Action method to create event
         [HttpPost("/event/create")]
         [Authorize]
         public async Task<IActionResult> CreateEvent([FromBody] EventCreateDto eventModel)
         {
+            //check input
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            //fetch the logged in username
             var user = User.GetUsername();
             var newEventDto = eventModel.ToEventCreateDto();
+            
+            //add new event in the DB
             var newEvent = await _eventRepository.Create(newEventDto, user);
             
             if (newEvent == null)
@@ -45,7 +49,7 @@ namespace TicketPurchaseAPI.Controllers
             return Ok(newEvent);
         }
 
-
+        //Action method to Get List of events
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetEvents()
@@ -60,14 +64,18 @@ namespace TicketPurchaseAPI.Controllers
             return Ok(events);
         }
 
+        //Action method to get a particular event
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
+            //check input
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            //fetch the event in the DB
             var eventRequested = await _eventRepository.GetByIdAsync(id);
             if (eventRequested == null)
             {
@@ -77,30 +85,38 @@ namespace TicketPurchaseAPI.Controllers
             return Ok(eventRequested);
         }
 
+        //Action method to Upate a particular event informantion
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] EventUpdateDto updateDto)
         {
+            //check input
             if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
+
+            //fetch the event in the DB
             var eventToUpdate = await _eventRepository.GetByIdAsync(id);
             if (eventToUpdate == null)
             {
                 return NotFound();
             }
             var updatedEvent = updateDto.ToEventUpdateDto();
+
+            //update the event
             await _eventRepository.Update(updatedEvent, id);
 
             return Ok(updatedEvent);
 
         }
 
+        //Action method to delete a particular event
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
+            //fetch the event in the DB
             var eventToDelete = await _eventRepository.GetByIdAsync(id);
             if (eventToDelete == null)
             {

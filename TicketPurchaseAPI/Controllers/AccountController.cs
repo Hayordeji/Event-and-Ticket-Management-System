@@ -22,16 +22,19 @@ namespace TicketPurchaseAPI.Controllers
             _signInManager = signInManager;
         }
 
+        //Action method to register account
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
+                //check input 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
+                //create a new User object
                 var appUser = new AppUser
                 {
                     Email = registerDto.Email,
@@ -39,7 +42,10 @@ namespace TicketPurchaseAPI.Controllers
                     PasswordHash = registerDto.Password
                 };
                 
+                //adds the user object in the DB
                 var createdUser = await  _userManager.CreateAsync(appUser,registerDto.Password);
+
+                //checks if user is added in the DB
                 if (createdUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
@@ -68,14 +74,18 @@ namespace TicketPurchaseAPI.Controllers
             }
         }
 
+
+        //Action method to login user
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
+            //check input 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            //finds user in the DB
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName  == loginDto.EmailOrUsername.ToLower() || u.Email == loginDto.EmailOrUsername.ToLower());
             if (user == null)
             {
