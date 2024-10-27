@@ -33,6 +33,7 @@ namespace TicketPurchaseAPI.Repository
             var ticketSeller = await _userManager.FindByNameAsync(ticket.Event.Host);
             ticketSeller.Balance = ticketSeller.Balance + ((int)ticket.Price);
             ticket.Status = TicketStatus.Paid;
+            ticket.Updated_At = DateTime.Now;
             ticket.Event.TicketSold++;
             await _context.SaveChangesAsync();
             return ticket;
@@ -111,6 +112,7 @@ namespace TicketPurchaseAPI.Repository
                 return null;
             }
             ticket.Status = TicketStatus.Validated;
+            ticket.Updated_At = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return ticket;
 

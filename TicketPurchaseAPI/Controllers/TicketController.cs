@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,12 +19,17 @@ namespace TicketPurchaseAPI.Controllers
         private readonly ITicketRepository _ticketRepo;
         private readonly IEventRepository _eventRepo;
         private readonly IQRGeneratorService _qrGeneratorService;
+        private readonly IPaymentRepository _paymentRepo;
+        private readonly UserManager<AppUser> _userManager;
        
-        public TicketController(ITicketRepository ticketRepo, IEventRepository  eventRepo, IQRGeneratorService qRGeneratorService)
+        public TicketController(ITicketRepository ticketRepo, IEventRepository  eventRepo, IQRGeneratorService qRGeneratorService,IPaymentRepository paymentRepo
+            ,UserManager<AppUser> userManager)
         {
             _ticketRepo = ticketRepo;
             _eventRepo = eventRepo;
             _qrGeneratorService = qRGeneratorService;
+            _paymentRepo = paymentRepo;
+            _userManager = userManager;
            
         }
 
@@ -36,6 +42,7 @@ namespace TicketPurchaseAPI.Controllers
                 return BadRequest();
             }
             var user = User.GetUsername();
+           
             var eventObject = await _eventRepo.GetByIdAsync(eventId);
             if (eventObject == null)
             {
@@ -47,6 +54,7 @@ namespace TicketPurchaseAPI.Controllers
             }
            
             var newTicket = await _ticketRepo.CreateTicketAsync(eventObject, ticketType,user);
+            var newPayment = await _paymentRepo.CreatePaymentAsync(user, newTicket.Id, newTicket.Price);
             return Ok(newTicket);
             
         }
